@@ -1,0 +1,11 @@
+include widget/widget.min.js
+include widget/widget.min.js.map
+include widget/async-*.js
+include widget/async-*.js.map
+include widget/*-shared.js
+include widget/*-shared.js.map
+include widget/metadata.json
+include widget/package-info.json
+include README.md
+include LICENSE
+include package.json
