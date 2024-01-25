@@ -1,7 +1,3 @@
-# TODO:  Wykresy: Wykresy dla poszczególnych sensorów u pacjenta, wykresy anomalii dla pacjenta, specjalny (zrobiony przez nas) widget z punktami wyświetlającymi wartości sensorów w czasie rzeczywistym
-# TODO:  Przycisk czyszczenia danych anomalii i aktualizacji anomalii dla danego pacjenta - będzieprzy wykresie anomalii pacjenta na jego stronie
-# TODO:  Ogarnięcie wszystkiego jakimiś ładnymi stylami i szatą graficzną
-# TODO:  Dostosowanie wykresów i stron do reguł projektowania ładnych i czytelnych stron/interfejsów, co były na wykładzie
 import widget
 from flask import Flask
 import requests
@@ -239,39 +235,6 @@ app = Dash(__name__, server=server)
 create_database()
 patients = get_patient_list()
 
-# Wygląd strony pacjenta
-# def generate_patient_page_layout(patient_id):
-#     # Pobierz dane pacjenta na podstawie identyfikatora
-#     patients = get_patient_list()
-#     patient_name = ""
-#
-#     for patient in patients:
-#         if f'{patient[0]}_{patient[1]}' == patient_id:
-#             patient_name = f'{patient[0]} {patient[1]}'
-#             break
-#
-#     # Wygeneruj układ strony pacjenta
-#     return '''
-#         <div>
-#             <h1>Last name and first name of the patient: {}</h1>
-#         </div>
-#     '''.format(patient_name)
-
-# # Strona pacjenta
-# @app.server.route('/patient/<patient_id>')
-# def show_patient(patient_id):
-#     # Wygeneruj układ strony pacjenta
-#     patient_page_layout = generate_patient_page_layout(patient_id)
-#
-#     # Zwróć układ strony pacjenta
-#     return patient_page_layout
-#
-# # callback dropdown menu
-# @app.callback(Output('patient-page-link', 'href'), [Input('patient-dropdown', 'value')])
-# def redirect_to_patient_page(patient_id):
-#     return f"/patient/{patient_id}"
-
-
 # Wygląd strony głównej
 app.layout = html.Div([
     html.Center([html.H1("Patient monitoring system")]),
@@ -287,8 +250,6 @@ app.layout = html.Div([
             style={'width': '50%', 'display': 'inline-block'}
         ),
         html.Br(),
-        # Przycisk do przechodzenia na stronę pacjenta
-        # html.A('Go to patient page', id='patient-page-link', href='', target='_blank', style={'display': 'block', 'margin': '20px auto'}),
         html.Br(), html.Br()
     ], style={'textAlign': 'center'}),
     # Lista pacjentów na stronie głównej
@@ -297,25 +258,25 @@ app.layout = html.Div([
         html.Table([
             html.Thead([
                 html.Tr([
-                    html.Th("Last Name"),
-                    html.Th("First Name"),
-                    html.Th("Birthdate"),
-                    html.Th("Disabled"),
-                    html.Th("Anomalies Count"),
+                    html.Th("Last Name ", style={'border-right': '1px solid black', 'border-left': '1px solid black'}),
+                    html.Th("First Name ", style={'border-right': '1px solid black'}),
+                    html.Th("Birthdate ", style={'border-right': '1px solid black'}),
+                    html.Th("Disabled ", style={'border-right': '1px solid black'}),
+                    html.Th("Anomalies Count ", style={'border-right': '1px solid black'}),
                     html.Br(), html.Br()
                 ])
             ]),
             html.Tbody([
                 html.Tr([
-                    html.Td(patient[0]),
-                    html.Td(patient[1]),
-                    html.Td(patient[2]),
-                    html.Td("Yes" if patient[3] == 1 else "No"),
-                    html.Td(patient[4] / 6),
+                    html.Td(patient[0]+" ", style={'border-right': '1px solid black', 'border-left': '1px solid black'}),
+                    html.Td(patient[1], style={'border-right': '1px solid black'}),
+                    html.Td(patient[2], style={'text-align': 'center', 'border-right': '1px solid black'}),
+                    html.Td("Yes" if patient[3] == 1 else "No", style={'text-align': 'center', 'border-right': '1px solid black'}),
+                    html.Td(patient[4] / 6, style={'text-align': 'center', 'border-right': '1px solid black'}),
                     html.Br()
                 ]) for patient in patients
             ])
-        ])
+        ], style={'border-spacing': '10px'})
     ]),
     html.Center([
         dcc.Graph(id='graph'),
@@ -334,8 +295,6 @@ app.layout = html.Div([
             label='my-label'
         )
     ]),
-
-
     dcc.Store(id='store-chosen-patient', data=[], storage_type='memory')
 ])
 
@@ -407,11 +366,10 @@ def update_graph_live(n, chosen_patient, checked_sensor):
 if __name__ == '__main__':
     create_database()
 
-    # Rozpocznij działąnie funkcji pobierania i zapisywania w tle
+    # Rozpocznij działanie funkcji pobierania i zapisywania w tle
     thread = threading.Thread(target=fetch_and_store_data)
     thread.start()
     thread_anomalies = threading.Thread(target=copy_anomalies)
     thread_anomalies.start()
 
-    # Uruchom aplikację w trybie debug - TODO: trzeba usunąć debug przed oddaniem projektu
-    app.run_server(debug=True)
+    app.run_server()
